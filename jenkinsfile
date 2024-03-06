@@ -9,7 +9,7 @@ pipeline {
 		stage ('GIT-CHECKOUT') {
 		    steps {
 			    script {
-				   git credentialsId: 'jenkins-gitlab-connection', branch: "dev", url: ''
+				   git credentialsId: 'jenkins-gitlab-connection', branch: "dev", url: 'https://github.com/fayazdev/Calculator.git'
 				}
 			}
 		}
