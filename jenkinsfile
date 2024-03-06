@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+	stages {
+	    stage ('clean Workspace') {
+		    steps {
+			    cleanWs()
+			}
+		}
+		stage ('GIT-CHECKOUT') {
+		    steps {
+			    script {
+				   git credentialsId: 'jenkins-gitlab-connection', branch: "dev", url: ''
+				}
+			}
+		}
+		stage ('CODE_BUILD') {
+		    steps {
+			    sh ''' #!/bin/bash
+				mvn clean install -U  -s /data/build-tools/maven/conf/settings.xml -DskipTests
+				'''
+			}
+		}
+		stage ("Image  Build - module Module") {
+            steps {
+			    script {
+			
+			        sh '''#!/bin/bash
+			        docker login --username=$username --password=$password 
+			        docker build -t abdm/abdm/$duomodule:$BUILD_NUMBER-DEV -f dockerfile-$duomodule .
+					docker push abdm/abdm/$duomodule:$BUILD_NUMBER-DEV
+					docker rmi abdm/abdm/$duomodule:$BUILD_NUMBER-DEV
+												   
+					'''
+				}
+            }
+		}		
+		stage ("Microservice Deployment ") {
+		    steps {
+			    script {
+					
+				    sh "sed -i 's/$duomodule:.*V'/$BUILD_NUMBER-DEV'/g'   /data/K8-Manifests-DEV/API/ABHA/$application/$apiName/$duomodule-deployment.yaml"
+					sh " kubectl apply -f /data/K8-Manifests-DEV/API/ABHA/$application/$apiName/$duomodule-deployment.yaml -n 
+				}
+			}
+		}
+	}
