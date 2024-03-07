@@ -6,12 +6,12 @@ pipeline {
 			    cleanWs()
 			}
 		}
-        stage('Checkout') {
-            steps {
+        //stage('Checkout') {
+          //  steps {
                 // Checkout code from Git repository
-                git branch: 'master', url: 'https://github.com/fayazdev/Calculator.git'
-            }
-        }
+                //git branch: 'master', url: 'https://github.com/fayazdev/Calculator.git'
+            //}
+        //}
 
         stage('Build') {
             steps {
