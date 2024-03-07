@@ -10,7 +10,7 @@ pipeline {
 		stage ('CODE_BUILD') {
 		    steps {
 			    sh ''' #!/bin/bash
-				mvn clean install -U  -s /data/build-tools/maven/conf/settings.xml -DskipTests
+				mvn clean install -U  -s settings.xml -DskipTests
 				'''
 			}
 		}
