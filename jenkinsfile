@@ -6,14 +6,22 @@ pipeline {
 			    cleanWs()
 			}
 		}
-		
-		stage ('CODE_BUILD') {
-		    steps {
-			    sh ''' #!/bin/bash
-				mvn -f pom.xml clean install
-				'''
-			}
-		}
+        stage('Checkout') {
+            steps {
+                // Checkout code from Git repository
+                git branch: 'master', url: 'https://github.com/fayazdev/Calculator.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Build Maven project
+                dir('pom.xml') {
+                    sh 'mvn clean install'
+                }
+            }
+        }
+
 		stage ("Image  Build - module Module") {
             steps {
 			    script {
