@@ -39,7 +39,7 @@ pipeline {
 			    script {
 					
 				//sh "sed -i 's/$duomodule:.*V'/$BUILD_NUMBER-DEV'/g'   /data/K8-Manifests-DEV/API/ABHA/$application/$apiName/$duomodule-deployment.yaml"
-				sh " kubectl apply -f calculator-deployment.yaml
+				sh "kubectl apply -f calculator-deployment.yaml"
 				}
 			}
 		}
