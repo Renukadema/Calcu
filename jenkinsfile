@@ -25,10 +25,10 @@ pipeline {
 			    script {
 			
 			        sh '''#!/bin/bash
-			        docker login --username=$username --password=$password 
-			        docker build -t abdm/abdm/$duomodule:$BUILD_NUMBER-DEV -f dockerfile-$duomodule .
-					docker push abdm/abdm/$duomodule:$BUILD_NUMBER-DEV
-					docker rmi abdm/abdm/$duomodule:$BUILD_NUMBER-DEV
+			        //docker login --username=$username --password=$password 
+			        docker build -t calculator:$BUILD_NUMBER-DEV -f dockerfile .
+				//docker push abdm/abdm/$duomodule:$BUILD_NUMBER-DEV
+				//docker rmi abdm/abdm/$duomodule:$BUILD_NUMBER-DEV
 												   
 					'''
 				}
@@ -38,8 +38,8 @@ pipeline {
 		    steps {
 			    script {
 					
-				    sh "sed -i 's/$duomodule:.*V'/$BUILD_NUMBER-DEV'/g'   /data/K8-Manifests-DEV/API/ABHA/$application/$apiName/$duomodule-deployment.yaml"
-					sh " kubectl apply -f /data/K8-Manifests-DEV/API/ABHA/$application/$apiName/$duomodule-deployment.yaml -n 
+				//sh "sed -i 's/$duomodule:.*V'/$BUILD_NUMBER-DEV'/g'   /data/K8-Manifests-DEV/API/ABHA/$application/$apiName/$duomodule-deployment.yaml"
+				sh " kubectl apply -f calculator-deployment.yaml
 				}
 			}
 		}
