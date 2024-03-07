@@ -16,7 +16,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Build Maven project
-                dir('pom.xml') {
+                dir('Calculator/pom.xml') {
                     sh 'mvn clean install'
                 }
             }
