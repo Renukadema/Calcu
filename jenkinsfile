@@ -6,6 +6,13 @@ pipeline {
 			    cleanWs()
 			}
 		}
+		stage ('GIT-CHECKOUT') {
+		    steps {
+			    script {
+				git credentialsId: 'jenkins-gitlab-connection', branch: "dev", url: 'https://github.com/fayazdev/Calculator.git'
+				}
+			}
+		}
 		
 		stage ('CODE_BUILD') {
 		    steps {
