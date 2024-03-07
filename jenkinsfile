@@ -10,7 +10,7 @@ pipeline {
 		stage ('CODE_BUILD') {
 		    steps {
 			    sh ''' #!/bin/bash
-				mvn clean install -f pom.xml
+				mvn -f pom.xml clean install
 				'''
 			}
 		}
