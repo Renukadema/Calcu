@@ -1,49 +1,41 @@
 pipeline {
     agent any
-	stages {
-	    stage ('clean Workspace') {
-		    steps {
-			    cleanWs()
-			}
-		}
-        //stage('Checkout') {
-          //  steps {
-                // Checkout code from Git repository
-                //git branch: 'master', url: 'https://github.com/fayazdev/Calculator.git'
-            //}
-        //}
 
+   stages {
         stage('Build') {
             steps {
-                // Build Maven project
-                //dir('Calculator/pom.xml') {
-                    sh 'mvn -f pom.xml clean install'
-               // }
+                // Get some code from a GitHub repository
+                git 'https://github.com/fayazdev/Calculator.git'
+
+                // Run Maven on a Unix agent.
+                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
         }
-
-		stage ("Image  Build - module Module") {
+        stage('Build docker') {
             steps {
-			    script {
-			
-			        sh '''#!/bin/bash
-			        //docker login --username=$username --password=$password 
-			        docker build -t calculator:$BUILD_NUMBER-DEV -f dockerfile .
-				//docker push abdm/abdm/$duomodule:$BUILD_NUMBER-DEV
-				//docker rmi abdm/abdm/$duomodule:$BUILD_NUMBER-DEV
-												   
-					'''
-				}
+                //sh "sudo docker build -t calculator . --file dockerfile"
+                sh '''#!/bin/bash
+                   docker build -t calculator . --file dockerfile
+                   '''
             }
-		}		
-		stage ("Microservice Deployment ") {
-		    steps {
-			    script {
-					
-				//sh "sed -i 's/$duomodule:.*V'/$BUILD_NUMBER-DEV'/g'   /data/K8-Manifests-DEV/API/ABHA/$application/$apiName/$duomodule-deployment.yaml"
-				sh "kubectl apply -f calculator-deployment.yaml"
-				}
-			}
-		}
-	}
+        }
+        stage('Helm Package') {
+            steps {
+                sh '''#!/bin/bash
+                helm package helm/calculator
+            '''
+            }
+        }
+        stage('Kubernetes Deployment') {
+            steps {
+                sh '''#!/bin/bash
+                helm install calculator helm/calculator
+            '''
+           }
+        }
+
+    }
 }
