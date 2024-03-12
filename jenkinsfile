@@ -2,16 +2,17 @@ pipeline {
     agent any
 
    stages {
-        stage('Build') {
+        stage('code checkout') {
             steps {
                 // Get some code from a GitHub repository
-                git 'https://github.com/fayazdev/Calculator.git'
-
+                git 'https://github.com/Renukadema/Calcu.git'
+            }
+        }
+        stage('Maven Build') {
+            steps {
+                
                 // Run Maven on a Unix agent.
                 sh "mvn -Dmaven.test.failure.ignore=true clean package"
-
-                // To run Maven on a Windows agent, use
-                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
         }
         stage('Build docker') {
@@ -29,13 +30,22 @@ pipeline {
             '''
             }
         }
-        stage('Kubernetes Deployment') {
+        stage('AWS EKS Authentication') {
             steps {
-                sh '''#!/bin/bash
-                helm install calculator helm/calculator
-            '''
-           }
+                withAWS(region: 'ap-south-1', credentials: 'aws-credentials') {
+                    sh "aws eks --region ap-south-1 update-kubeconfig --name awseks"
+                }
+            }
         }
-
+        stage('Deploy to EKS') {
+            steps {
+                withAWS(region: 'ap-south-1', credentials: 'aws-credentials') {
+                    sh "aws eks --region ap-south-1 update-kubeconfig --name awseks"
+                    sh '''#!/bin/bash
+                    helm install calculator helm/calculator
+                '''
+                }
+            }
+        }
     }
 }
