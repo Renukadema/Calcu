@@ -39,8 +39,8 @@ pipeline {
         }
         stage('Deploy to EKS') {
             steps {
-                withAWS(region: 'ap-south-1', credentials: 'aws-credentials') {
-                    sh "aws eks --region ap-south-1 update-kubeconfig --name awseks"
+                withAWS(region: 'us-east-1', credentials: 'aws-credentials') {
+                    sh "aws eks --region us-east-1 update-kubeconfig --cluster awseks"
                     sh '''#!/bin/bash
                     helm install calculator helm/calculator
                 '''
