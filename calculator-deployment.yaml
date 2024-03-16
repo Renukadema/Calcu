@@ -1,9 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: calculator-deployment
+  labels:
+    app: calculator
+  name: calculator
 spec:
-  replicas: 3
+  replicas: 4
   selector:
     matchLabels:
       app: calculator
@@ -13,8 +15,28 @@ spec:
         app: calculator
     spec:
       containers:
-        - name: calculator-container
-          image: nginx
-          ports:
-            - containerPort: 8080
-
+      - name: calculator
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8085
+          name: http
+          protocol: TCP
+# service type loadbalancer       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: calculator
+    k8s-app: calculator
+  name: calculator
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8085
+  type: LoadBalancer
+  selector:
+    app: calculator
